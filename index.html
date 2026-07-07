@@ -269,6 +269,107 @@
       color: white;
       border-color: var(--accent);
     }
+    .dash-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .dash-item {
+      display: flex;
+      flex-direction: column;
+      background: #faf6ef;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 16px;
+      gap: 8px;
+    }
+    @media (min-width: 768px) {
+      .dash-item {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+    .dash-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 170px;
+    }
+    .dash-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 4px;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+    .dash-badge.secret {
+      background: #ffebe9;
+      color: #cf222e;
+      border: 1px solid #ffc1bd;
+    }
+    .dash-badge.variable {
+      background: #ddf4ff;
+      color: #0969da;
+      border: 1px solid #b3e6ff;
+    }
+    .dash-name {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .dash-cmd-container {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid #e1d8c9;
+      border-radius: 8px;
+      padding: 8px 12px;
+      overflow-x: auto;
+      margin: 4px 0;
+    }
+    @media (min-width: 768px) {
+      .dash-cmd-container {
+        margin: 0 16px;
+      }
+    }
+    .dash-cmd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      white-space: nowrap;
+      margin: 0;
+      color: var(--text);
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      word-break: normal;
+    }
+    .dash-copy-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--text);
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .dash-copy-btn:hover:not(:disabled) {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+    .dash-copy-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -339,12 +440,61 @@
         <h2 style="margin:0;" data-i18n="ghTitle">GitHub commands</h2>
         <button id="copyGh" type="button" disabled data-i18n="btnCopyGh">Copy GitHub commands</button>
       </div>
-      <p class="muted" style="margin-bottom:8px;" id="ghNotice" data-i18n="ghNotice">成功抓到 Instagram account 後，呢度會自動生成。</p>
-      <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-        <label for="ghRepoInput" style="margin: 0; font-weight: bold; font-size: 14px;">GitHub Repository:</label>
-        <input id="ghRepoInput" type="text" value="oghermanw/Publer-ID-Finder" placeholder="owner/repo" style="max-width: 300px; padding: 6px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #d4c3ad; background: #fffdf8;" />
+      <p class="muted" style="margin-bottom:16px;" id="ghNotice" data-i18n="ghNotice">成功抓到 Instagram account 後，呢度會自動生成。</p>
+      
+      <div style="margin-bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label for="ghRepoInput" style="margin: 0; font-weight: bold; font-size: 14px;">GitHub Repository:</label>
+          <input id="ghRepoInput" type="text" value="oghermanw/Publer-ID-Finder" placeholder="owner/repo" style="max-width: 300px; padding: 6px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #d4c3ad; background: #fffdf8;" />
+        </div>
+        
+        <div id="dashWorkspaceSelectorContainer" style="display:none; align-items: center; gap: 8px;">
+          <label for="dashWorkspaceSelect" style="margin:0; font-weight:bold; font-size:14px;" data-i18n="lblSelectWorkspace">Select Workspace:</label>
+          <select id="dashWorkspaceSelect" style="padding: 6px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #d4c3ad; background: #fffdf8; min-width: 200px;"></select>
+        </div>
       </div>
-      <pre id="ghBlock"># 等待成功抓取資料...</pre>
+
+      <!-- Dashboard Rows -->
+      <div class="dash-row">
+        <!-- Row 1: API Key -->
+        <div class="dash-item">
+          <div class="dash-info">
+            <span class="dash-badge secret">Secret</span>
+            <span class="dash-name">PUBLER_API_KEY</span>
+          </div>
+          <div class="dash-cmd-container">
+            <pre id="cmdApiKey" class="dash-cmd"># 等待成功抓取資料...</pre>
+          </div>
+          <button id="copyCmdApiKey" class="dash-copy-btn" type="button" disabled data-i18n="btnCopy">Copy</button>
+        </div>
+
+        <!-- Row 2: Workspace ID -->
+        <div class="dash-item">
+          <div class="dash-info">
+            <span class="dash-badge variable">Variable</span>
+            <span class="dash-name">PUBLER_WORKSPACE_ID</span>
+          </div>
+          <div class="dash-cmd-container">
+            <pre id="cmdWorkspaceId" class="dash-cmd"># 等待成功抓取資料...</pre>
+          </div>
+          <button id="copyCmdWorkspaceId" class="dash-copy-btn" type="button" disabled data-i18n="btnCopy">Copy</button>
+        </div>
+
+        <!-- Row 3: Account IDs -->
+        <div class="dash-item">
+          <div class="dash-info">
+            <span class="dash-badge variable">Variable</span>
+            <span class="dash-name">PUBLER_ACCOUNT_IDS</span>
+          </div>
+          <div class="dash-cmd-container">
+            <pre id="cmdAccountIds" class="dash-cmd"># 等待成功抓取資料...</pre>
+          </div>
+          <button id="copyCmdAccountIds" class="dash-copy-btn" type="button" disabled data-i18n="btnCopy">Copy</button>
+        </div>
+      </div>
+
+      <!-- Fallback hidden raw block for copyGh -->
+      <pre id="ghBlock" class="hidden"># 等待成功抓取資料...</pre>
     </section>
 
     <p class="footer-note" data-i18n="securityNote">Security note: 呢個 HTML 只係本地工具，API key 只會存在當前瀏覽器頁面記憶體，除非你自己 copy/save。不要把含有真實 API key 的截圖或檔案公開。</p>
@@ -360,6 +510,14 @@
     const copySummaryBtn = $('copySummary');
     const copyGhBtn = $('copyGh');
     const ghRepoInput = $('ghRepoInput');
+    const cmdApiKey = $('cmdApiKey');
+    const cmdWorkspaceId = $('cmdWorkspaceId');
+    const cmdAccountIds = $('cmdAccountIds');
+    const copyCmdApiKey = $('copyCmdApiKey');
+    const copyCmdWorkspaceId = $('copyCmdWorkspaceId');
+    const copyCmdAccountIds = $('copyCmdAccountIds');
+    const dashWorkspaceSelect = $('dashWorkspaceSelect');
+    const dashWorkspaceSelectorContainer = $('dashWorkspaceSelectorContainer');
 
     let lastSummary = '';
     let lastGh = '';
@@ -416,7 +574,11 @@
         thPublerId: "Publer Account ID",
         thSocialId: "social_id",
         thType: "type",
-        instagramLabel: "Instagram PUBLER_ACCOUNT_IDS:"
+        instagramLabel: "Instagram PUBLER_ACCOUNT_IDS:",
+        lblSelectWorkspace: "Select Workspace:",
+        btnCopy: "Copy",
+        copiedCmd: "Copied command.",
+        statusWaitingData: "# Waiting for successful data fetch..."
       },
       "zh-tw": {
         title: "Publer Workspace & Instagram Account ID Finder",
@@ -466,7 +628,11 @@
         thPublerId: "Publer 帳號 ID",
         thSocialId: "social_id",
         thType: "類型",
-        instagramLabel: "Instagram PUBLER_ACCOUNT_IDS："
+        instagramLabel: "Instagram PUBLER_ACCOUNT_IDS：",
+        lblSelectWorkspace: "選擇工作區：",
+        btnCopy: "複製",
+        copiedCmd: "已複製指令。",
+        statusWaitingData: "# 等待成功抓取資料..."
       },
       "zh-hk": {
         title: "Publer Workspace & Instagram Account ID Finder",
@@ -516,7 +682,11 @@
         thPublerId: "Publer Account ID",
         thSocialId: "social_id",
         thType: "type",
-        instagramLabel: "Instagram PUBLER_ACCOUNT_IDS:"
+        instagramLabel: "Instagram PUBLER_ACCOUNT_IDS:",
+        lblSelectWorkspace: "選擇 Workspace：",
+        btnCopy: "Copy",
+        copiedCmd: "已複製指令。",
+        statusWaitingData: "# 等待成功抓取資料..."
       }
     };
 
@@ -559,6 +729,7 @@
         } else if (!statusEl.className.includes('err')) {
           setStatus(t('statusWaiting'), '');
         }
+        updateGhDashboard();
       }
       
       updateCurl();
@@ -631,10 +802,20 @@ done`;
     function renderResults(items, apiKey) {
       resultsEl.innerHTML = '';
       let summaryLines = [];
-      let ghLines = [];
       const repo = ghRepoInput.value.trim() || 'oghermanw/Publer-ID-Finder';
 
-      ghLines.push(`gh secret set PUBLER_API_KEY --repo ${repo} --body "${apiKey}"`);
+      dashWorkspaceSelect.innerHTML = '';
+      if (items.length > 1) {
+        items.forEach((item, idx) => {
+          const opt = document.createElement('option');
+          opt.value = idx;
+          opt.textContent = item.workspace.name || `${t('unnamedWorkspace')} (${item.workspace.id})`;
+          dashWorkspaceSelect.appendChild(opt);
+        });
+        dashWorkspaceSelectorContainer.style.display = 'flex';
+      } else {
+        dashWorkspaceSelectorContainer.style.display = 'none';
+      }
 
       for (const item of items) {
         const ws = item.workspace;
@@ -643,12 +824,10 @@ done`;
 
         summaryLines.push(`${t('workspaceLabel')}${ws.name || t('unnamedWorkspace')}`);
         summaryLines.push(`PUBLER_WORKSPACE_ID=${ws.id}`);
-        ghLines.push(`gh variable set PUBLER_WORKSPACE_ID --repo ${repo} --body "${ws.id}"`);
 
         if (igAccounts.length) {
           const ids = igAccounts.map(a => a.id).join(',');
           summaryLines.push(`PUBLER_ACCOUNT_IDS=${ids}`);
-          ghLines.push(`gh variable set PUBLER_ACCOUNT_IDS --repo ${repo} --body "${ids}"`);
         } else {
           summaryLines.push(`PUBLER_ACCOUNT_IDS=${t('noIgAccountFound')}`);
         }
@@ -685,9 +864,62 @@ done`;
       }
 
       lastSummary = summaryLines.join('\n').trim();
-      lastGh = ghLines.join('\n');
-      ghBlock.textContent = lastGh;
       copySummaryBtn.disabled = !lastSummary;
+
+      updateGhDashboard();
+    }
+
+    function updateGhDashboard() {
+      if (!fetchedData || !fetchedData.length) {
+        cmdApiKey.textContent = t('statusWaitingData');
+        cmdWorkspaceId.textContent = t('statusWaitingData');
+        cmdAccountIds.textContent = t('statusWaitingData');
+        copyCmdApiKey.disabled = true;
+        copyCmdWorkspaceId.disabled = true;
+        copyCmdAccountIds.disabled = true;
+        ghBlock.textContent = t('statusWaitingData');
+        copyGhBtn.disabled = true;
+        return;
+      }
+
+      const apiKey = apiKeyEl.value.trim();
+      const repo = ghRepoInput.value.trim() || 'oghermanw/Publer-ID-Finder';
+      
+      let selectedIdx = 0;
+      if (fetchedData.length > 1) {
+        selectedIdx = parseInt(dashWorkspaceSelect.value) || 0;
+        if (selectedIdx < 0 || selectedIdx >= fetchedData.length) {
+          selectedIdx = 0;
+        }
+      }
+
+      const item = fetchedData[selectedIdx];
+      const ws = item.workspace;
+      const accounts = item.accounts || [];
+      const igAccounts = accounts.filter(a => a.provider === 'instagram');
+
+      const cmd1 = `gh secret set PUBLER_API_KEY --repo ${repo} --body "${apiKey}"`;
+      const cmd2 = `gh variable set PUBLER_WORKSPACE_ID --repo ${repo} --body "${ws.id}"`;
+      
+      let cmd3 = '';
+      if (igAccounts.length) {
+        const ids = igAccounts.map(a => a.id).join(',');
+        cmd3 = `gh variable set PUBLER_ACCOUNT_IDS --repo ${repo} --body "${ids}"`;
+      } else {
+        cmd3 = `# ${t('noIgAccountFound')}`;
+      }
+
+      cmdApiKey.textContent = cmd1;
+      cmdWorkspaceId.textContent = cmd2;
+      cmdAccountIds.textContent = cmd3;
+
+      copyCmdApiKey.disabled = !apiKey;
+      copyCmdWorkspaceId.disabled = !ws.id;
+      copyCmdAccountIds.disabled = !igAccounts.length;
+
+      const fullGh = [cmd1, cmd2, igAccounts.length ? cmd3 : ''].filter(Boolean).join('\n');
+      lastGh = fullGh;
+      ghBlock.textContent = lastGh;
       copyGhBtn.disabled = !lastGh;
     }
 
@@ -741,15 +973,16 @@ done`;
       await navigator.clipboard.writeText(text);
     }
 
-    $('run').addEventListener('click', run);
+    $('run').addEventListener('click', () => {
+      updateGhDashboard();
+      run();
+    });
     $('clear').addEventListener('click', () => {
       apiKeyEl.value = '';
       fetchedData = null;
       updateCurl();
       resultsEl.innerHTML = '';
-      ghBlock.textContent = '# 等待成功抓取資料...';
-      copySummaryBtn.disabled = true;
-      copyGhBtn.disabled = true;
+      updateGhDashboard();
       setStatus(t('clearedMessage'), '');
     });
     $('toggleKey').addEventListener('click', () => {
@@ -770,6 +1003,20 @@ done`;
       await copyText(lastGh);
       setStatus(t('copiedGh'), 'ok');
     });
+    copyCmdApiKey.addEventListener('click', async () => {
+      await copyText(cmdApiKey.textContent);
+      setStatus(t('copiedCmd'), 'ok');
+    });
+    copyCmdWorkspaceId.addEventListener('click', async () => {
+      await copyText(cmdWorkspaceId.textContent);
+      setStatus(t('copiedCmd'), 'ok');
+    });
+    copyCmdAccountIds.addEventListener('click', async () => {
+      if (copyCmdAccountIds.disabled) return;
+      await copyText(cmdAccountIds.textContent);
+      setStatus(t('copiedCmd'), 'ok');
+    });
+    dashWorkspaceSelect.addEventListener('change', updateGhDashboard);
     apiKeyEl.addEventListener('input', updateCurl);
     ghRepoInput.addEventListener('input', () => {
       if (fetchedData && apiKeyEl.value.trim()) {
