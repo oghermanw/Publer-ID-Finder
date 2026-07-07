@@ -238,45 +238,81 @@
     .muted { color: var(--muted); }
     .hidden { display: none !important; }
     .footer-note { margin-top: 18px; color: var(--muted); font-size: 13px; }
+
+    .lang-selector {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin: 0 auto;
+      width: min(1100px, calc(100% - 32px));
+      padding-top: 16px;
+    }
+    .lang-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 241, 0.6);
+      color: var(--muted);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      backdrop-filter: blur(4px);
+    }
+    .lang-btn:hover {
+      background: #f0e6d6;
+      border-color: #c4ad91;
+    }
+    .lang-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
   </style>
 </head>
 <body>
+  <div class="lang-selector">
+    <button data-lang="en" class="lang-btn">English</button>
+    <button data-lang="zh-tw" class="lang-btn">繁體中文 (台灣)</button>
+    <button data-lang="zh-hk" class="lang-btn active">繁體中文 (香港)</button>
+  </div>
   <main>
     <section class="hero">
-      <h1>Publer ID Finder</h1>
-      <p class="subtitle">貼入 Publer API Key，即時列出 Workspaces、Accounts、Instagram Publer Account ID，並產生 GitHub Secret / Variable commands。API Key 預設留空，不會寫入此 HTML 檔案。</p>
+      <h1 data-i18n="heroTitle">Publer ID Finder</h1>
+      <p class="subtitle" data-i18n="subtitle">貼入 Publer API Key，即時列出 Workspaces、Accounts、Instagram Publer Account ID，並產生 GitHub Secret / Variable commands。API Key 預設留空，不會寫入此 HTML 檔案。</p>
     </section>
 
     <section class="grid two">
       <div class="card">
-        <h2>1) 輸入 Publer API Key</h2>
-        <label for="apiKey">Publer API Key</label>
+        <h2 data-i18n="card1Title">1) 輸入 Publer API Key</h2>
+        <label for="apiKey" data-i18n="apiKeyLabel">Publer API Key</label>
         <div class="input-row">
-          <input id="apiKey" type="password" placeholder="貼上 Publer API Key，例如 publer_xxx...（不要加 Bearer-API）" autocomplete="off" spellcheck="false" />
-          <button id="toggleKey" class="ghost" type="button">Show</button>
+          <input id="apiKey" type="password" data-i18n-placeholder="apiKeyPlaceholder" placeholder="貼上 Publer API Key，例如 publer_xxx...（不要加 Bearer-API）" autocomplete="off" spellcheck="false" />
+          <button id="toggleKey" class="ghost" type="button" data-i18n="toggleKeyShow">Show</button>
         </div>
         <div class="actions">
-          <button id="run" class="primary" type="button">Fetch Workspaces & Accounts</button>
-          <button id="clear" type="button">Clear</button>
+          <button id="run" class="primary" type="button" data-i18n="btnFetch">Fetch Workspaces & Accounts</button>
+          <button id="clear" type="button" data-i18n="btnClear">Clear</button>
         </div>
-        <div class="notice">
+        <div class="notice" data-i18n="corsNotice">
           Browser 直接 call API 有機會被 CORS 擋住。若失敗，下面會自動產生 Terminal curl command，你照貼去 Terminal 跑就得。
         </div>
-        <div id="status" class="status">等待輸入 API Key。</div>
+        <div id="status" class="status" data-i18n="statusWaiting">等待輸入 API Key。</div>
       </div>
 
       <div class="card">
-        <h2>2) 最終你要放入 GitHub 嘅三個名稱</h2>
-        <div class="small">官方/API 對應：</div>
+        <h2 data-i18n="card2Title">2) 最終你要放入 GitHub 嘅三個名稱</h2>
+        <div class="small" data-i18n="card2Subtitle">官方/API 對應：</div>
         <table>
-          <thead><tr><th>GitHub Name</th><th>Publer / API 名稱</th></tr></thead>
+          <thead><tr><th data-i18n="thGithubName">GitHub Name</th><th data-i18n="thPublerName">Publer / API 名稱</th></tr></thead>
           <tbody>
             <tr><td><code>PUBLER_API_KEY</code></td><td>API key / Bearer API token</td></tr>
             <tr><td><code>PUBLER_WORKSPACE_ID</code></td><td>Workspace ID / <code>Publer-Workspace-Id</code></td></tr>
             <tr><td><code>PUBLER_ACCOUNT_IDS</code></td><td>Social account ID / account <code>id</code></td></tr>
           </tbody>
         </table>
-        <div class="notice">
+        <div class="notice" data-i18n="importantNotice">
           重點：<code>PUBLER_ACCOUNT_IDS</code> 要用 Publer 回傳嘅 <code>id</code>，唔係 Instagram username，亦唔係 <code>social_id</code>。
         </div>
       </div>
@@ -284,26 +320,26 @@
 
     <section class="card" style="margin-top:16px;">
       <div class="copy-row">
-        <h2 style="margin:0;">Results</h2>
-        <button id="copySummary" type="button" disabled>Copy Summary</button>
+        <h2 style="margin:0;" data-i18n="resultsTitle">Results</h2>
+        <button id="copySummary" type="button" disabled data-i18n="btnCopySummary">Copy Summary</button>
       </div>
       <div id="results" class="result-grid"></div>
     </section>
 
     <section class="card" style="margin-top:16px;">
       <div class="copy-row">
-        <h2 style="margin:0;">Terminal fallback command</h2>
-        <button id="copyCurl" type="button">Copy curl</button>
+        <h2 style="margin:0;" data-i18n="fallbackTitle">Terminal fallback command</h2>
+        <button id="copyCurl" type="button" data-i18n="btnCopyCurl">Copy curl</button>
       </div>
       <pre id="curlBlock"></pre>
     </section>
 
     <section class="card" style="margin-top:16px;">
       <div class="copy-row">
-        <h2 style="margin:0;">GitHub commands</h2>
-        <button id="copyGh" type="button" disabled>Copy GitHub commands</button>
+        <h2 style="margin:0;" data-i18n="ghTitle">GitHub commands</h2>
+        <button id="copyGh" type="button" disabled data-i18n="btnCopyGh">Copy GitHub commands</button>
       </div>
-      <p class="muted" style="margin-bottom:8px;">成功抓到 Instagram account 後，呢度會自動生成。</p>
+      <p class="muted" style="margin-bottom:8px;" id="ghNotice" data-i18n="ghNotice">成功抓到 Instagram account 後，呢度會自動生成。</p>
       <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
         <label for="ghRepoInput" style="margin: 0; font-weight: bold; font-size: 14px;">GitHub Repository:</label>
         <input id="ghRepoInput" type="text" value="oghermanw/Publer-ID-Finder" placeholder="owner/repo" style="max-width: 300px; padding: 6px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #d4c3ad; background: #fffdf8;" />
@@ -311,7 +347,7 @@
       <pre id="ghBlock"># 等待成功抓取資料...</pre>
     </section>
 
-    <p class="footer-note">Security note: 呢個 HTML 只係本地工具，API key 只會存在當前瀏覽器頁面記憶體，除非你自己 copy/save。不要把含有真實 API key 的截圖或檔案公開。</p>
+    <p class="footer-note" data-i18n="securityNote">Security note: 呢個 HTML 只係本地工具，API key 只會存在當前瀏覽器頁面記憶體，除非你自己 copy/save。不要把含有真實 API key 的截圖或檔案公開。</p>
   </main>
 
   <script>
@@ -328,6 +364,205 @@
     let lastSummary = '';
     let lastGh = '';
     let fetchedData = null;
+
+    let currentLang = 'zh-hk';
+
+    const I18N = {
+      en: {
+        title: "Publer Workspace & Instagram Account ID Finder",
+        heroTitle: "Publer ID Finder",
+        subtitle: "Paste your Publer API Key to instantly list Workspaces, Accounts, and Instagram Publer Account IDs, and generate GitHub Secret / Variable commands. The API Key is kept blank by default and is never saved to this HTML file.",
+        card1Title: "1) Enter Publer API Key",
+        apiKeyLabel: "Publer API Key",
+        apiKeyPlaceholder: "Paste your Publer API Key, e.g., publer_xxx... (do not include Bearer-API)",
+        toggleKeyShow: "Show",
+        toggleKeyHide: "Hide",
+        btnFetch: "Fetch Workspaces & Accounts",
+        btnClear: "Clear",
+        corsNotice: "Direct API calls from the browser may be blocked by CORS. If it fails, a terminal curl command will be automatically generated below for you to copy and run.",
+        statusWaiting: "Waiting for API Key.",
+        card2Title: "2) Three Names to Configure in GitHub",
+        card2Subtitle: "Official / API Mapping:",
+        thGithubName: "GitHub Name",
+        thPublerName: "Publer / API Name",
+        importantNotice: "Important: <code>PUBLER_ACCOUNT_IDS</code> must use the <code>id</code> returned by Publer, not the Instagram username, nor the <code>social_id</code>.",
+        resultsTitle: "Results",
+        btnCopySummary: "Copy Summary",
+        fallbackTitle: "Terminal fallback command",
+        btnCopyCurl: "Copy curl",
+        ghTitle: "GitHub commands",
+        btnCopyGh: "Copy GitHub commands",
+        ghNotice: "This will be automatically generated after successfully fetching Instagram accounts.",
+        securityNote: "Security note: This HTML is a local tool only. The API key is stored only in the current browser page memory unless you copy/save it yourself. Do not make screenshots or files containing real API keys public.",
+        
+        errNoApiKey: "Please enter your Publer API Key first. Paste only the key itself, without Bearer-API.",
+        fetchingWorkspaces: "Fetching workspaces...",
+        errNoWorkspaces: "Connected successfully, but no workspaces were found. Please check your API key permissions.",
+        foundWorkspaces: (count) => `Found ${count} workspace(s), fetching accounts...`,
+        doneMessage: "Done. Please copy the GitHub commands or retrieve the IDs directly from the results.",
+        fetchFailed: (msg) => `Browser fetch failed: ${msg}\n\nPossible reasons: invalid API key / insufficient scopes / Publer CORS blocking browser request. Please use the Terminal fallback command below.`,
+        clearedMessage: "Cleared.",
+        copiedCurl: "Copied Terminal fallback command.",
+        copiedSummary: "Copied Summary.",
+        copiedGh: "Copied GitHub commands.",
+        
+        workspaceLabel: "Workspace: ",
+        unnamedWorkspace: "Unnamed Workspace",
+        noIgAccountFound: "(No Instagram account found in this workspace)",
+        noIgAccountInWorkspace: "No accounts with <code>provider=\"instagram\"</code> found in this workspace.",
+        noAccountsFound: "No accounts found.",
+        thProvider: "Provider",
+        thName: "Name",
+        thPublerId: "Publer Account ID",
+        thSocialId: "social_id",
+        thType: "type",
+        instagramLabel: "Instagram PUBLER_ACCOUNT_IDS:"
+      },
+      "zh-tw": {
+        title: "Publer Workspace & Instagram Account ID Finder",
+        heroTitle: "Publer ID Finder",
+        subtitle: "貼上 Publer API Key，即時列出工作區、帳號、Instagram Publer 帳號 ID，並產生 GitHub Secret / Variable 指令。API Key 預設留空，不會寫入此 HTML 檔案。",
+        card1Title: "1) 輸入 Publer API Key",
+        apiKeyLabel: "Publer API Key",
+        apiKeyPlaceholder: "貼上 Publer API Key，例如 publer_xxx...（不要加 Bearer-API）",
+        toggleKeyShow: "顯示",
+        toggleKeyHide: "隱藏",
+        btnFetch: "讀取工作區與帳號",
+        btnClear: "清除",
+        corsNotice: "瀏覽器直接發送 API 請求可能會被 CORS 阻擋。若失敗，下方會自動產生終端機 curl 指令，直接複製到終端機執行即可。",
+        statusWaiting: "等待輸入 API Key。",
+        card2Title: "2) 最終需要設定於 GitHub 的三個名稱",
+        card2Subtitle: "官方/API 對應：",
+        thGithubName: "GitHub 名稱",
+        thPublerName: "Publer / API 對應名稱",
+        importantNotice: "重點：<code>PUBLER_ACCOUNT_IDS</code> 必須使用 Publer 回傳的 <code>id</code>，而不是 Instagram 使用者名稱，也不是 <code>social_id</code>。",
+        resultsTitle: "查詢結果",
+        btnCopySummary: "複製摘要",
+        fallbackTitle: "終端機備用指令",
+        btnCopyCurl: "複製 curl",
+        ghTitle: "GitHub 指令",
+        btnCopyGh: "複製 GitHub 指令",
+        ghNotice: "成功取得 Instagram 帳號後，此處將自動產生。",
+        securityNote: "安全提示：此 HTML 僅為本地工具，API key 只會儲存在當前瀏覽器的頁面記憶體中，除非您自行複製或存檔。請勿公開包含真實 API key 的螢幕截圖或檔案。",
+        
+        errNoApiKey: "請先貼上 Publer API Key。只需貼上金鑰本身，不要加上 Bearer-API。",
+        fetchingWorkspaces: "正在讀取工作區...",
+        errNoWorkspaces: "連線成功，但未讀取到工作區。請檢查 API Key 權限。",
+        foundWorkspaces: (count) => `找到 ${count} 個工作區，正在讀取帳號...`,
+        doneMessage: "完成。請複製 GitHub 指令，或直接複製 Results 中的 ID。",
+        fetchFailed: (msg) => `瀏覽器 Fetch 失敗：${msg}\n\n可能原因：API Key 錯誤 / 權限不足 / Publer CORS 阻擋瀏覽器請求。請使用下方的終端機備用指令。`,
+        clearedMessage: "已清空。",
+        copiedCurl: "已複製終端機備用指令。",
+        copiedSummary: "已複製摘要。",
+        copiedGh: "已複製 GitHub 指令。",
+        
+        workspaceLabel: "工作區：",
+        unnamedWorkspace: "未命名工作區",
+        noIgAccountFound: "(在此工作區中找不到 Instagram 帳號)",
+        noIgAccountInWorkspace: "此工作區暫時找不到 <code>provider=\"instagram\"</code> 的帳號。",
+        noAccountsFound: "找不到帳號。",
+        thProvider: "平台",
+        thName: "名稱",
+        thPublerId: "Publer 帳號 ID",
+        thSocialId: "social_id",
+        thType: "類型",
+        instagramLabel: "Instagram PUBLER_ACCOUNT_IDS："
+      },
+      "zh-hk": {
+        title: "Publer Workspace & Instagram Account ID Finder",
+        heroTitle: "Publer ID Finder",
+        subtitle: "貼入 Publer API Key，即時列出 Workspaces、Accounts、Instagram Publer Account ID，並產生 GitHub Secret / Variable commands。API Key 預設留空，不會寫入此 HTML 檔案。",
+        card1Title: "1) 輸入 Publer API Key",
+        apiKeyLabel: "Publer API Key",
+        apiKeyPlaceholder: "貼上 Publer API Key，例如 publer_xxx...（不要加 Bearer-API）",
+        toggleKeyShow: "Show",
+        toggleKeyHide: "Hide",
+        btnFetch: "Fetch Workspaces & Accounts",
+        btnClear: "Clear",
+        corsNotice: "Browser 直接 call API 有機會被 CORS 擋住。若失敗，下面會自動產生 Terminal curl command，你照貼去 Terminal 跑就得。",
+        statusWaiting: "等待輸入 API Key。",
+        card2Title: "2) 最終你要放入 GitHub 嘅三個名稱",
+        card2Subtitle: "官方/API 對應：",
+        thGithubName: "GitHub Name",
+        thPublerName: "Publer / API 名稱",
+        importantNotice: "重點：<code>PUBLER_ACCOUNT_IDS</code> 要用 Publer 回傳嘅 <code>id</code>，唔係 Instagram username，亦唔係 <code>social_id</code>。",
+        resultsTitle: "Results",
+        btnCopySummary: "Copy Summary",
+        fallbackTitle: "Terminal fallback command",
+        btnCopyCurl: "Copy curl",
+        ghTitle: "GitHub commands",
+        btnCopyGh: "Copy GitHub commands",
+        ghNotice: "成功抓到 Instagram account 後，呢度會自動生成。",
+        securityNote: "Security note: 呢個 HTML 只係本地工具，API key 只會存在當前瀏覽器頁面記憶體，除非你自己 copy/save。不要把含有真實 API key 的截圖或檔案公開。",
+        
+        errNoApiKey: "請先貼入 Publer API Key。只貼 key 本身，不要加 Bearer-API。",
+        fetchingWorkspaces: "正在讀取 workspaces...",
+        errNoWorkspaces: "成功連線，但沒有讀到 workspace。請檢查 API key 權限。",
+        foundWorkspaces: (count) => `找到 ${count} 個 workspace，正在讀取 accounts...`,
+        doneMessage: "完成。請複製 GitHub commands，或者直接拎 Results 入面嘅 ID。",
+        fetchFailed: (msg) => `Browser fetch 失敗：${msg}\n\n可能原因：API key 錯 / scope 不足 / Publer CORS 阻擋 browser request。請用下面 Terminal fallback command。`,
+        clearedMessage: "已清空。",
+        copiedCurl: "已複製 Terminal fallback command。",
+        copiedSummary: "已複製 Summary。",
+        copiedGh: "已複製 GitHub commands。",
+        
+        workspaceLabel: "Workspace: ",
+        unnamedWorkspace: "Unnamed Workspace",
+        noIgAccountFound: "(No Instagram account found in this workspace)",
+        noIgAccountInWorkspace: "呢個 workspace 暫時搵唔到 <code>provider=\"instagram\"</code> 嘅 account。",
+        noAccountsFound: "No accounts found.",
+        thProvider: "Provider",
+        thName: "Name",
+        thPublerId: "Publer Account ID",
+        thSocialId: "social_id",
+        thType: "type",
+        instagramLabel: "Instagram PUBLER_ACCOUNT_IDS:"
+      }
+    };
+
+    function t(key, ...args) {
+      const item = I18N[currentLang][key];
+      if (typeof item === 'function') {
+        return item(...args);
+      }
+      return item || key;
+    }
+
+    function switchLanguage(lang) {
+      if (!I18N[lang]) return;
+      currentLang = lang;
+      
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.innerHTML = t(key);
+      });
+
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        el.placeholder = t(key);
+      });
+
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+      });
+
+      document.title = t('title');
+
+      const isPassword = apiKeyEl.type === 'password';
+      $('toggleKey').textContent = isPassword ? t('toggleKeyShow') : t('toggleKeyHide');
+
+      if (fetchedData && apiKeyEl.value.trim()) {
+        renderResults(fetchedData, apiKeyEl.value.trim());
+      } else {
+        if (statusEl.className.includes('ok')) {
+          setStatus(t('doneMessage'), 'ok');
+        } else if (!statusEl.className.includes('err')) {
+          setStatus(t('statusWaiting'), '');
+        }
+      }
+      
+      updateCurl();
+    }
 
     function setStatus(text, type = '') {
       statusEl.textContent = text;
@@ -406,7 +641,7 @@ done`;
         const accounts = item.accounts || [];
         const igAccounts = accounts.filter(a => a.provider === 'instagram');
 
-        summaryLines.push(`Workspace: ${ws.name || 'Unnamed Workspace'}`);
+        summaryLines.push(`${t('workspaceLabel')}${ws.name || t('unnamedWorkspace')}`);
         summaryLines.push(`PUBLER_WORKSPACE_ID=${ws.id}`);
         ghLines.push(`gh variable set PUBLER_WORKSPACE_ID --repo ${repo} --body "${ws.id}"`);
 
@@ -415,7 +650,7 @@ done`;
           summaryLines.push(`PUBLER_ACCOUNT_IDS=${ids}`);
           ghLines.push(`gh variable set PUBLER_ACCOUNT_IDS --repo ${repo} --body "${ids}"`);
         } else {
-          summaryLines.push('PUBLER_ACCOUNT_IDS=(No Instagram account found in this workspace)');
+          summaryLines.push(`PUBLER_ACCOUNT_IDS=${t('noIgAccountFound')}`);
         }
         summaryLines.push('');
 
@@ -431,19 +666,19 @@ done`;
         }).join('');
 
         const igBlock = igAccounts.length
-          ? `<div class="notice"><strong>Instagram PUBLER_ACCOUNT_IDS:</strong><br>${igAccounts.map(a => `<code>${escapeHtml(a.id)}</code> — ${escapeHtml(a.name || 'no_name')}`).join('<br>')}</div>`
-          : `<div class="notice">呢個 workspace 暫時搵唔到 <code>provider="instagram"</code> 嘅 account。</div>`;
+          ? `<div class="notice"><strong>${t('instagramLabel')}</strong><br>${igAccounts.map(a => `<code>${escapeHtml(a.id)}</code> — ${escapeHtml(a.name || 'no_name')}`).join('<br>')}</div>`
+          : `<div class="notice">${t('noIgAccountInWorkspace')}</div>`;
 
         resultsEl.insertAdjacentHTML('beforeend', `
           <div class="workspace">
             <div class="workspace-head">
-              <div class="workspace-title">${escapeHtml(ws.name || 'Unnamed Workspace')}</div>
+              <div class="workspace-title">${escapeHtml(ws.name || t('unnamedWorkspace'))}</div>
               <div class="small">PUBLER_WORKSPACE_ID: <code>${escapeHtml(ws.id || '')}</code></div>
             </div>
             ${igBlock}
             <table>
-              <thead><tr><th>Provider</th><th>Name</th><th>Publer Account ID</th><th>social_id</th><th>type</th></tr></thead>
-              <tbody>${rows || '<tr><td colspan="5">No accounts found.</td></tr>'}</tbody>
+              <thead><tr><th>${t('thProvider')}</th><th>${t('thName')}</th><th>${t('thPublerId')}</th><th>${t('thSocialId')}</th><th>${t('thType')}</th></tr></thead>
+              <tbody>${rows || `<tr><td colspan="5">${t('noAccountsFound')}</td></tr>`}</tbody>
             </table>
           </div>
         `);
@@ -465,11 +700,11 @@ done`;
       copyGhBtn.disabled = true;
 
       if (!apiKey) {
-        setStatus('請先貼入 Publer API Key。只貼 key 本身，不要加 Bearer-API。', 'err');
+        setStatus(t('errNoApiKey'), 'err');
         return;
       }
 
-      setStatus('正在讀取 workspaces...', '');
+      setStatus(t('fetchingWorkspaces'), '');
 
       const headers = { 'Authorization': `Bearer-API ${apiKey}` };
       try {
@@ -477,11 +712,11 @@ done`;
         const workspaces = normalizeArray(wsJson, 'workspaces');
 
         if (!workspaces.length) {
-          setStatus('成功連線，但沒有讀到 workspace。請檢查 API key 權限。', 'err');
+          setStatus(t('errNoWorkspaces'), 'err');
           return;
         }
 
-        setStatus(`找到 ${workspaces.length} 個 workspace，正在讀取 accounts...`, '');
+        setStatus(t('foundWorkspaces', workspaces.length), '');
 
         const combined = [];
         for (const ws of workspaces) {
@@ -495,10 +730,10 @@ done`;
 
         fetchedData = combined;
         renderResults(combined, apiKey);
-        setStatus('完成。請複製 GitHub commands，或者直接拎 Results 入面嘅 ID。', 'ok');
+        setStatus(t('doneMessage'), 'ok');
       } catch (err) {
         console.error(err);
-        setStatus(`Browser fetch 失敗：${err.message}\n\n可能原因：API key 錯 / scope 不足 / Publer CORS 阻擋 browser request。請用下面 Terminal fallback command。`, 'err');
+        setStatus(t('fetchFailed', err.message), 'err');
       }
     }
 
@@ -515,25 +750,25 @@ done`;
       ghBlock.textContent = '# 等待成功抓取資料...';
       copySummaryBtn.disabled = true;
       copyGhBtn.disabled = true;
-      setStatus('已清空。', '');
+      setStatus(t('clearedMessage'), '');
     });
     $('toggleKey').addEventListener('click', () => {
       const isPassword = apiKeyEl.type === 'password';
       apiKeyEl.type = isPassword ? 'text' : 'password';
-      $('toggleKey').textContent = isPassword ? 'Hide' : 'Show';
+      $('toggleKey').textContent = isPassword ? t('toggleKeyHide') : t('toggleKeyShow');
     });
     $('copyCurl').addEventListener('click', async () => {
       updateCurl();
       await copyText(curlBlock.textContent);
-      setStatus('已複製 Terminal fallback command。', 'ok');
+      setStatus(t('copiedCurl'), 'ok');
     });
     copySummaryBtn.addEventListener('click', async () => {
       await copyText(lastSummary);
-      setStatus('已複製 Summary。', 'ok');
+      setStatus(t('copiedSummary'), 'ok');
     });
     copyGhBtn.addEventListener('click', async () => {
       await copyText(lastGh);
-      setStatus('已複製 GitHub commands。', 'ok');
+      setStatus(t('copiedGh'), 'ok');
     });
     apiKeyEl.addEventListener('input', updateCurl);
     ghRepoInput.addEventListener('input', () => {
@@ -541,7 +776,14 @@ done`;
         renderResults(fetchedData, apiKeyEl.value.trim());
       }
     });
-    updateCurl();
+    
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchLanguage(btn.getAttribute('data-lang'));
+      });
+    });
+
+    switchLanguage('zh-hk');
   </script>
 </body>
 </html>
