@@ -303,7 +303,11 @@
         <h2 style="margin:0;">GitHub commands</h2>
         <button id="copyGh" type="button" disabled>Copy GitHub commands</button>
       </div>
-      <p class="muted" style="margin-bottom:0;">成功抓到 Instagram account 後，呢度會自動生成。預設 repo 係 <code>paulwongelite/jetsopick</code>，你可以自己改。</p>
+      <p class="muted" style="margin-bottom:8px;">成功抓到 Instagram account 後，呢度會自動生成。</p>
+      <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        <label for="ghRepoInput" style="margin: 0; font-weight: bold; font-size: 14px;">GitHub Repository:</label>
+        <input id="ghRepoInput" type="text" value="oghermanw/Publer-ID-Finder" placeholder="owner/repo" style="max-width: 300px; padding: 6px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #d4c3ad; background: #fffdf8;" />
+      </div>
       <pre id="ghBlock"># 等待成功抓取資料...</pre>
     </section>
 
@@ -319,9 +323,11 @@
     const ghBlock = $('ghBlock');
     const copySummaryBtn = $('copySummary');
     const copyGhBtn = $('copyGh');
+    const ghRepoInput = $('ghRepoInput');
 
     let lastSummary = '';
     let lastGh = '';
+    let fetchedData = null;
 
     function setStatus(text, type = '') {
       statusEl.textContent = text;
@@ -391,7 +397,7 @@ done`;
       resultsEl.innerHTML = '';
       let summaryLines = [];
       let ghLines = [];
-      const repo = 'paulwongelite/jetsopick';
+      const repo = ghRepoInput.value.trim() || 'oghermanw/Publer-ID-Finder';
 
       ghLines.push(`gh secret set PUBLER_API_KEY --repo ${repo} --body "${apiKey}"`);
 
@@ -487,6 +493,7 @@ done`;
           combined.push({ workspace: ws, accounts });
         }
 
+        fetchedData = combined;
         renderResults(combined, apiKey);
         setStatus('完成。請複製 GitHub commands，或者直接拎 Results 入面嘅 ID。', 'ok');
       } catch (err) {
@@ -502,6 +509,7 @@ done`;
     $('run').addEventListener('click', run);
     $('clear').addEventListener('click', () => {
       apiKeyEl.value = '';
+      fetchedData = null;
       updateCurl();
       resultsEl.innerHTML = '';
       ghBlock.textContent = '# 等待成功抓取資料...';
@@ -528,6 +536,11 @@ done`;
       setStatus('已複製 GitHub commands。', 'ok');
     });
     apiKeyEl.addEventListener('input', updateCurl);
+    ghRepoInput.addEventListener('input', () => {
+      if (fetchedData && apiKeyEl.value.trim()) {
+        renderResults(fetchedData, apiKeyEl.value.trim());
+      }
+    });
     updateCurl();
   </script>
 </body>
