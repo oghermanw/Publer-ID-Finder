@@ -370,6 +370,36 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
+    .dash-sub-item-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+    @media (min-width: 768px) {
+      .dash-sub-item-row {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+    .ig-cb-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: normal;
+      cursor: pointer;
+      margin: 0;
+      color: var(--text);
+    }
+    .ig-cb-label input[type="checkbox"] {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      margin: 0;
+    }
   </style>
 </head>
 <body>
@@ -481,16 +511,32 @@
         </div>
 
         <!-- Row 3: Account IDs -->
-        <div class="dash-item">
-          <div class="dash-info">
-            <span class="dash-badge variable">Variable</span>
-            <span class="dash-name">PUBLER_ACCOUNT_IDS</span>
+        <div class="dash-item" style="flex-direction: column; align-items: stretch; gap: 12px;">
+          <div class="dash-sub-item-row">
+            <div class="dash-info">
+              <span class="dash-badge variable">Variable</span>
+              <span class="dash-name">PUBLER_ACCOUNT_IDS</span>
+            </div>
+            <div class="dash-cmd-container">
+              <pre id="cmdAccountIds" class="dash-cmd"># 等待成功抓取資料...</pre>
+            </div>
+            <button id="copyCmdAccountIds" class="dash-copy-btn" type="button" disabled data-i18n="btnCopy">Copy</button>
           </div>
-          <div class="dash-cmd-container">
-            <pre id="cmdAccountIds" class="dash-cmd"># 等待成功抓取資料...</pre>
+          
+          <!-- Checkbox List -->
+          <div id="igCheckboxContainer" style="display:none; padding: 12px; background: #ffffff; border: 1px solid #e1d8c9; border-radius: 8px; flex-direction: column; gap: 8px;">
+            <div style="font-weight: bold; font-size: 13px; color: var(--muted);" data-i18n="lblSelectIgAccounts">Select Instagram Accounts to include:</div>
+            <div id="igCheckboxList" style="display: flex; flex-direction: column; gap: 8px;"></div>
           </div>
-          <button id="copyCmdAccountIds" class="dash-copy-btn" type="button" disabled data-i18n="btnCopy">Copy</button>
         </div>
+      </div>
+
+      <!-- Copy All 3 Commands Button -->
+      <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+        <button id="copyAllCmdsBtn" class="primary" type="button" disabled style="display: flex; align-items: center; gap: 8px; padding: 12px 24px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span data-i18n="btnCopyAll3">Copy All 3 Commands</span>
+        </button>
       </div>
 
       <!-- Fallback hidden raw block for copyGh -->
@@ -518,6 +564,9 @@
     const copyCmdAccountIds = $('copyCmdAccountIds');
     const dashWorkspaceSelect = $('dashWorkspaceSelect');
     const dashWorkspaceSelectorContainer = $('dashWorkspaceSelectorContainer');
+    const igCheckboxContainer = $('igCheckboxContainer');
+    const igCheckboxList = $('igCheckboxList');
+    const copyAllCmdsBtn = $('copyAllCmdsBtn');
 
     let lastSummary = '';
     let lastGh = '';
@@ -578,7 +627,11 @@
         lblSelectWorkspace: "Select Workspace:",
         btnCopy: "Copy",
         copiedCmd: "Copied command.",
-        statusWaitingData: "# Waiting for successful data fetch..."
+        statusWaitingData: "# Waiting for successful data fetch...",
+        lblSelectIgAccounts: "Select Instagram accounts to include in PUBLER_ACCOUNT_IDS:",
+        btnCopyAll3: "Copy All 3 Commands",
+        copiedAll3: "Copied all 3 commands.",
+        noIgAccountSelected: "No Instagram accounts selected"
       },
       "zh-tw": {
         title: "Publer Workspace & Instagram Account ID Finder",
@@ -632,7 +685,11 @@
         lblSelectWorkspace: "選擇工作區：",
         btnCopy: "複製",
         copiedCmd: "已複製指令。",
-        statusWaitingData: "# 等待成功抓取資料..."
+        statusWaitingData: "# 等待成功抓取資料...",
+        lblSelectIgAccounts: "選擇要包含於 PUBLER_ACCOUNT_IDS 的 Instagram 帳號：",
+        btnCopyAll3: "複製全部 3 個指令",
+        copiedAll3: "已複製全部 3 個指令。",
+        noIgAccountSelected: "未選擇 Instagram 帳號"
       },
       "zh-hk": {
         title: "Publer Workspace & Instagram Account ID Finder",
@@ -665,7 +722,7 @@
         fetchingWorkspaces: "正在讀取 workspaces...",
         errNoWorkspaces: "成功連線，但沒有讀到 workspace。請檢查 API key 權限。",
         foundWorkspaces: (count) => `找到 ${count} 個 workspace，正在讀取 accounts...`,
-        doneMessage: "完成。請複製 GitHub commands，或者直接拎 Results 入面嘅 ID。",
+        doneMessage: "完成。請複製 GitHub commands，或者直接拎 Results入面嘅 ID。",
         fetchFailed: (msg) => `Browser fetch 失敗：${msg}\n\n可能原因：API key 錯 / scope 不足 / Publer CORS 阻擋 browser request。請用下面 Terminal fallback command。`,
         clearedMessage: "已清空。",
         copiedCurl: "已複製 Terminal fallback command。",
@@ -686,7 +743,11 @@
         lblSelectWorkspace: "選擇 Workspace：",
         btnCopy: "Copy",
         copiedCmd: "已複製指令。",
-        statusWaitingData: "# 等待成功抓取資料..."
+        statusWaitingData: "# 等待成功抓取資料...",
+        lblSelectIgAccounts: "選擇要包含喺 PUBLER_ACCOUNT_IDS 嘅 Instagram 帳號：",
+        btnCopyAll3: "複製全部 3 個指令",
+        copiedAll3: "已複製全部 3 個指令。",
+        noIgAccountSelected: "未選擇 Instagram 帳號"
       }
     };
 
@@ -879,6 +940,8 @@ done`;
         copyCmdAccountIds.disabled = true;
         ghBlock.textContent = t('statusWaitingData');
         copyGhBtn.disabled = true;
+        copyAllCmdsBtn.disabled = true;
+        igCheckboxContainer.style.display = 'none';
         return;
       }
 
@@ -901,26 +964,72 @@ done`;
       const cmd1 = `gh secret set PUBLER_API_KEY --repo ${repo} --body "${apiKey}"`;
       const cmd2 = `gh variable set PUBLER_WORKSPACE_ID --repo ${repo} --body "${ws.id}"`;
       
-      let cmd3 = '';
-      if (igAccounts.length) {
-        const ids = igAccounts.map(a => a.id).join(',');
-        cmd3 = `gh variable set PUBLER_ACCOUNT_IDS --repo ${repo} --body "${ids}"`;
-      } else {
-        cmd3 = `# ${t('noIgAccountFound')}`;
-      }
-
       cmdApiKey.textContent = cmd1;
       cmdWorkspaceId.textContent = cmd2;
-      cmdAccountIds.textContent = cmd3;
-
       copyCmdApiKey.disabled = !apiKey;
       copyCmdWorkspaceId.disabled = !ws.id;
-      copyCmdAccountIds.disabled = !igAccounts.length;
 
-      const fullGh = [cmd1, cmd2, igAccounts.length ? cmd3 : ''].filter(Boolean).join('\n');
+      // Check if workspace has changed to rebuild checkbox list
+      const currentWsId = igCheckboxList.getAttribute('data-ws-id');
+      if (currentWsId !== ws.id) {
+        igCheckboxList.setAttribute('data-ws-id', ws.id);
+        igCheckboxList.innerHTML = '';
+        if (igAccounts.length > 0) {
+          igAccounts.forEach(a => {
+            const lbl = document.createElement('label');
+            lbl.className = 'ig-cb-label';
+            lbl.innerHTML = `
+              <input type="checkbox" data-id="${escapeHtml(a.id)}" checked />
+              <span><strong>${escapeHtml(a.name || 'no_name')}</strong> (ID: <code>${escapeHtml(a.id)}</code>${a.type ? `, type: ${escapeHtml(a.type)}` : ''})</span>
+            `;
+            lbl.querySelector('input').addEventListener('change', refreshAccountIdsCommand);
+            igCheckboxList.appendChild(lbl);
+          });
+          igCheckboxContainer.style.display = 'flex';
+        } else {
+          igCheckboxContainer.style.display = 'none';
+        }
+      }
+
+      refreshAccountIdsCommand();
+    }
+
+    function refreshAccountIdsCommand() {
+      const repo = ghRepoInput.value.trim() || 'oghermanw/Publer-ID-Finder';
+      const apiKey = apiKeyEl.value.trim();
+
+      let selectedIdx = 0;
+      if (fetchedData && fetchedData.length > 1) {
+        selectedIdx = parseInt(dashWorkspaceSelect.value) || 0;
+      }
+      
+      const item = fetchedData ? fetchedData[selectedIdx] : null;
+      const ws = item ? item.workspace : null;
+
+      const checkedBoxes = Array.from(igCheckboxList.querySelectorAll('input[type="checkbox"]:checked'));
+      const selectedIds = checkedBoxes.map(cb => cb.getAttribute('data-id')).join(',');
+
+      let cmd3 = '';
+      if (selectedIds) {
+        cmd3 = `gh variable set PUBLER_ACCOUNT_IDS --repo ${repo} --body "${selectedIds}"`;
+        copyCmdAccountIds.disabled = false;
+      } else {
+        const itemHasIg = item && (item.accounts || []).some(a => a.provider === 'instagram');
+        cmd3 = itemHasIg ? `# ${t('noIgAccountSelected')}` : `# ${t('noIgAccountFound')}`;
+        copyCmdAccountIds.disabled = true;
+      }
+      cmdAccountIds.textContent = cmd3;
+
+      const cmd1 = cmdApiKey.textContent;
+      const cmd2 = cmdWorkspaceId.textContent;
+
+      const fullGh = [cmd1, cmd2, selectedIds ? cmd3 : ''].filter(Boolean).join('\n');
       lastGh = fullGh;
       ghBlock.textContent = lastGh;
-      copyGhBtn.disabled = !lastGh;
+
+      const hasData = fetchedData && fetchedData.length > 0;
+      copyGhBtn.disabled = !hasData;
+      copyAllCmdsBtn.disabled = !hasData;
     }
 
     async function run() {
@@ -1015,6 +1124,11 @@ done`;
       if (copyCmdAccountIds.disabled) return;
       await copyText(cmdAccountIds.textContent);
       setStatus(t('copiedCmd'), 'ok');
+    });
+    copyAllCmdsBtn.addEventListener('click', async () => {
+      if (copyAllCmdsBtn.disabled) return;
+      await copyText(lastGh);
+      setStatus(t('copiedAll3'), 'ok');
     });
     dashWorkspaceSelect.addEventListener('change', updateGhDashboard);
     apiKeyEl.addEventListener('input', updateCurl);
